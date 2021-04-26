@@ -1,9 +1,11 @@
-import React, {useState} from 'react'
-import {Button, Form, Input} from "antd";
+import React, { useState } from 'react'
+import { Typography, Button, Form, Input } from 'antd';
+import FileUploads from "../../utils/FileUploads";
 import "./UploadProductPage.css";
+import axios from 'axios';
 
-const {TextArea} = Input;
-const ContinentsList = [
+const { TextArea } = Input;
+const Continents = [
     {key:1,value:"Africa"},
     {key:2,value:"Europe"},
     {key:3,value:"Asia"},
@@ -13,85 +15,95 @@ const ContinentsList = [
     {key:7,value:"Antarctica"},
 ]
 
-function UploadProductPage() {
+function UploadProductPage(props) {
 
-    const [Title, setTitle] = useState("");
-    const [Description, setDescription] = useState("");
-    const [Price, setPrice] = useState(0);
-    const [Continents, setContinents] = useState(1);
-    const [Images, setImages] = useState([]);
+    const [Title, setTitle] = useState("")
+    const [Description, setDescription] = useState("")
+    const [Price, setPrice] = useState(0)
+    const [Continent, setContinent] = useState(1)
+    const [Images, setImages] = useState([])
 
     const titleChangeHandler = (event) => {
-        setTitle(event.curretTarget.value);
+        setTitle(event.currentTarget.value)
     }
 
     const descriptionChangeHandler = (event) => {
-        setDescription(event.curretTarget.value);
+        setDescription(event.currentTarget.value)
     }
 
     const priceChangeHandler = (event) => {
-        setPrice(event.curretTarget.value);
+        setPrice(event.currentTarget.value)
     }
 
-    const continentsChangeHandler = (event) => {
-        setContinents(event.curretTarget.value);
+    const continentChangeHandler = (event) => {
+        setContinent(event.currentTarget.value)
+    }
+
+    const dropHandler = (files) => {
+        let formData = new FormData();
+        // https://developer.mozilla.org/en-US/docs/Web/API/FormData
+
+        const config = {
+            header: {'content-type' : 'multipart/form-data'}
+        }
+        formData.append("file",files[0]);
+
+        axios.post('/api/product/image', formData,config)
+            .then(response => {
+                if(response.data.success) {
+                    console.log("response.data",response.data);
+                } else {
+                    alert('failed to save image')
+                }
+            })
     }
 
 
     return (
-        <div class="uploadContainer">
-            <div class ="subContainer">
-            <h2>travel product upload</h2>
-        </div>
+        <div className="uploadContainer">
+            <div className="subContainer">
+                <h2>travle package upload</h2>
+            </div>
 
-        <Form>
-            {/*Dronzone*/}
-            <br/>
-            <br/>
-            <label>name</label>
-            <Input onchange={titleChangeHandler} value={Title}/>
+            <Form>
+                {/* DropZone */}
+                <FileUploads onChange={dropHandler}/>
 
-            <br/>
-            <br/>
-
-            <label>description</label>
-            <TextArea onchange={descriptionChangeHandler} value={Description}/>
-
-            <label>price($)</label>
-            <Input onchange={priceChangeHandler} value={Price}/>
-
-            <br/>
-            <br/>
-
-            <select onChange={continentsChangeHandler} value={Continents}>
-                {/*
-
-                2 different variation for same code 
-
-                Error handling : Expected an assignment or function call and instead saw an expression
+                <br />
+                <br />
+                <label>name</label>
+                <Input onChange={titleChangeHandler} value={Title} />
+                <br />
+                <br />
+                <label>description</label>
+                <TextArea onChange={descriptionChangeHandler} value={Description} />
+                <br />
+                <br />
+                <label>가격($)</label>
+                <Input type="number" onChange={priceChangeHandler} value={Price} />
+                <br />
+                <br />
+                <select onChange={continentChangeHandler} value={Continent}>
+                     {/* 2 different variation for same code 
+                    Error handling : Expected an assignment or function call and instead saw an expression (return issue) */}
                     
-                */}
-                {/*Continents.map((item) => {
-                  return (
-                  <option key={item.key} value={item.value}>{item.value}</option>
-                  )})*/}
+                    {/* {Continents.map((item) => {
+                    return (
+                    <option key={item.key} value={item.value}>{item.value}</option>
+                    )})} */}
 
-                {ContinentsList.map((item) => (
-                    <option key={item.key} value={Continents}>{item.value}</option>
-                ))}
+                    {Continents.map(item => (
+                        <option key={item.key} value={item.key}>{item.value}</option>
+                    ))}
+                </select>
+                <br />
+                <br />
+                <button type="submit">
+                    confirm
+                </button>
+            </Form>
 
-            </select>
 
-
-            <br/>
-            <br/>
-
-            <Button>
-                confirm
-            </Button>
-
-   
-        </Form>
         </div>
     )
 }
