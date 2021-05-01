@@ -39,23 +39,8 @@ function UploadProductPage(props) {
         setContinent(event.currentTarget.value)
     }
 
-    const dropHandler = (files) => {
-        let formData = new FormData();
-        // https://developer.mozilla.org/en-US/docs/Web/API/FormData
-
-        const config = {
-            header: {'content-type' : 'multipart/form-data'}
-        }
-        formData.append("file",files[0]);
-
-        axios.post('/api/product/image', formData,config)
-            .then(response => {
-                if(response.data.success) {
-                    console.log("response.data",response.data);
-                } else {
-                    alert('failed to save image')
-                }
-            })
+    const updateImage = (newImage) => {
+        setImages(newImage);
     }
 
 
@@ -67,7 +52,7 @@ function UploadProductPage(props) {
 
             <Form>
                 {/* DropZone */}
-                <FileUploads onChange={dropHandler}/>
+                <FileUploads refreshFunction={updateImage}/>
 
                 <br />
                 <br />
