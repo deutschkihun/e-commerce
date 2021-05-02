@@ -19,9 +19,9 @@ function FileUploads(props) {
         axios.post('/api/product/image',formData,config)
             .then(response => {
                 if(response.data.success) {
-                    setImages([...Image,response.data.filePath]);
+                    setImages([...Images,response.data.filePath]);
                     //transport to parent component (UploadProudctPage)
-                    props.refreshFunction([...Image,response.data.filePath]) 
+                    props.refreshFunction([...Images,response.data.filePath]) 
 
                 }else {
                     alert('fail to save')
