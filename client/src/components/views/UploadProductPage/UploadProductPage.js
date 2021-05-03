@@ -3,8 +3,8 @@ import { Form, Input } from 'antd';
 import FileUploads from "../../utils/FileUploads";
 import "./UploadProductPage.css";
 import axios from 'axios';
-
 const { TextArea } = Input;
+
 const Continents = [
     {key:1,value:"Africa"},
     {key:2,value:"Europe"},
@@ -52,25 +52,25 @@ function UploadProductPage(props) {
 
         // send filled data to server 
         const body = {
-            // logged in user data
+            //로그인 된 사람의 ID 
             writer: props.user.userData._id,
             title: Title,
             description: Description,
-            price:Price,
-            images:Images,
-            continents:Continent
+            price: Price,
+            images: Images,
+            continents: Continent
         }
 
-        axios.post('/api/product',body)
+        axios.post('/api/product', body)
             .then(response => {
-                if(response.data.success) {
-                    alert('success to upload product')
+                if (response.data.success) {
+                    alert('successfully uploaded')
                     props.history.push('/')
                 } else {
-                    alert('fail to upload product')
+                    alert('fail to upload')
                 }
             })
-    } 
+    }
 
 
     return (

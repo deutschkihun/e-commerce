@@ -1,0 +1,8 @@
+.cardContainer {
+    width: 75%;
+    margin: 3rem auto;
+}
+
+.cardTitle {
+    text-align: center;
+}
