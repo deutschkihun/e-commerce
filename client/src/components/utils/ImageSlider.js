@@ -1,11 +1,12 @@
 import React from 'react'
 import {Carousel} from 'antd';
+import "./ImageSlider.css"
 
 function ImageSlider(props) {
     return (
         <div>
         <Carousel autoplay>
-           {props.imageList.map((image,index) => (
+           {props.images.map((image,index) => (
                <div key={index}>
                    <img className="productImage" src={`http://localhost:5000/${image}`}/>
                </div>

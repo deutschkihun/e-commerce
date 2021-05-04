@@ -48,16 +48,29 @@ router.post('/', (req, res) => {
 
 router.post('/products', (req, res) => {
 
+    let limit = req.body.limit ? parseInt(req.body.limit) : 20;
+    let skip = req.body.skip ? parseInt(req.body.skip) : 0;
+
+    
+
     // get all data from collection (table)
     // populate : (데이터를) 덧붙이다.
     // exec : execute querying  
+    // documentation : https://mongoosejs.com/docs/populate.html
     Product.find()
         .populate("writer") 
-        .exec((err,response) => {
+        .skip(skip)
+        .limit(limit)
+        .exec((err,productInfo) => {
             if(err) return res.status(400).json({ success:false, err});
-            return res.status(200).json({ success:true, response})
+            return res.status(200).json({ 
+                success:true, productInfo,
+                postSize : productInfo.length
+            })
         })
 })
+
+
 
 
 
