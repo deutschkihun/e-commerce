@@ -38,6 +38,11 @@ const productSchema = mongoose.Schema({
     }
 }, { timestamps: true })
 
+
+// this part is used for keyword filtering of search engine
+// weight means the importanc of search criteria. in this case title is 5 and description is 1 
+// it means that title is 5 times more important than description
+// 'text' is used for mongoose find filtering property 
 productSchema.index({
     title: 'text',
     description: 'text'

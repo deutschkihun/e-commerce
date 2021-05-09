@@ -91,7 +91,7 @@ function LandingPage() {
         let array = [];
 
         for(let key in data) {
-            if(data[key]._id == parseInt(value,10)) {
+            if(data[key]._id === parseInt(value,10)) {
                 array = data[key].array
             }
         }
@@ -112,8 +112,18 @@ function LandingPage() {
     }
 
     const updateSearchTerm = (newSearchTerm) => {
-        console.log("newSearchTerm",newSearchTerm);
+        // newSerchTerm print current target value in the search engine
         setSearchTerm(newSearchTerm)
+        
+        let body = {
+            skip: 0,
+            limit:Limit,
+            filters:Filters,
+            searchTerm: newSearchTerm
+        }
+        setSkip(0)
+        setSearchTerm(newSearchTerm)
+        getProduct(body)
     }
 
     return ( 
