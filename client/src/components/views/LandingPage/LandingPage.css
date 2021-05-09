@@ -11,3 +11,9 @@
     display: flex;
     justify-content: center;
 }
+
+.searchFeature {
+    display: flex;
+    justify-content: flex-end;
+    margin: 1rem auto;
+}

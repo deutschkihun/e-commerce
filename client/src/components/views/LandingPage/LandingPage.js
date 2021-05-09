@@ -4,7 +4,9 @@ import {Icon,Col,Card,Row} from 'antd';
 import Meta from 'antd/lib/card/Meta';
 import ImageSlider from '../../utils/ImageSlider';
 import CheckBox from "./Sections/CheckBox";
+import RadioBox from "./Sections/RadioBox"
 import {price,continents} from "./Sections/Data";
+import SearchFeature from "./Sections/SearchFeature"
 import  "./LandingPage.css"
 
 function LandingPage() {
@@ -16,6 +18,11 @@ function LandingPage() {
     // every load more event will database load 8 data started from index 0 to 7
     // if skip is equal to 1 than load 8 data started with index 1 to 8
     const [PostSize, setPostSize] = useState(0)
+    const [Filters, setFilters] = useState({
+        continents:[],
+        price:[]
+    })
+    const [SearchTerm, setSearchTerm] = useState("")
 
     useEffect(() => { 
         let body = {
@@ -68,6 +75,47 @@ function LandingPage() {
         )
     })
 
+    const showFilteredResults = (filters) => {
+        // after checking, getProduct should be rerendered
+        let body = {
+            skip:0,
+            limit:Limit,
+            filters:filters
+        }
+        getProduct(body)
+        setSkip(0)
+    }
+
+    const handlePrice = (value) => {
+        const data = price
+        let array = [];
+
+        for(let key in data) {
+            if(data[key]._id == parseInt(value,10)) {
+                array = data[key].array
+            }
+        }
+        return array
+    }
+    
+    const handleFilter = (filters,category) => {
+        const newFilters = {...Filters} 
+        newFilters[category] = filters
+
+        if(category === "price") {
+            let priceValue = handlePrice(filters)
+            newFilters[category] = priceValue
+        }
+
+        showFilteredResults(newFilters)
+        setFilters(newFilters)
+    }
+
+    const updateSearchTerm = (newSearchTerm) => {
+        console.log("newSearchTerm",newSearchTerm);
+        setSearchTerm(newSearchTerm)
+    }
+
     return ( 
         <div className="cardContainer">
         <div className="cardTitle">
@@ -77,12 +125,22 @@ function LandingPage() {
 
         {/* Filter */}
 
-        {/* Checkbox */}
-        <CheckBox list={continents}/>
-
-        {/* radiobox */}
-
-        {/* Search */}
+        <Row gutter={[16,16]}>
+            <Col lg={12} xs={24}>
+                {/* Checkbox */}
+                <CheckBox list={continents} handleFilterFromCheckBox={filters => handleFilter(filters,"continents")}/>  
+            </Col>    
+            <Col lg={12} xs={24}>
+                {/* radiobox */}
+                <RadioBox list={price} handleFilterFromRadioBox={filters => handleFilter(filters,"price")}/>
+            </Col>               
+        </Row>
+        {/* Search */} 
+        <div className="searchFeature">
+            <SearchFeature
+                refreshFunction={updateSearchTerm}
+            />
+        </div>
         {/* Cards */}
 
         <Row gutter={[16,16]}>

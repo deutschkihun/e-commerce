@@ -52,7 +52,7 @@ function UploadProductPage(props) {
 
         // send filled data to server 
         const body = {
-            //로그인 된 사람의 ID 
+            // id of logged in user
             writer: props.user.userData._id,
             title: Title,
             description: Description,
