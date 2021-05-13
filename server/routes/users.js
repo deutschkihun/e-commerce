@@ -17,6 +17,8 @@ router.get("/auth", auth, (req, res) => {
         lastname: req.user.lastname,
         role: req.user.role,
         image: req.user.image,
+        cart: req.user.cart,
+        history: req.user.history
     });
 });
 
@@ -65,6 +67,59 @@ router.get("/logout", auth, (req, res) => {
             success: true
         });
     });
+});
+
+
+router.post("/addToCart", auth, (req, res) => {
+
+    // get user Informaiton from Collection 
+    User.findOne({ _id: req.user._id },
+        (err, userInfo) => {
+
+            // userInfo = user information in mongoDB
+            // 가져온 정보에서 카트에다 넣으려 하는 상품이 이미 들어 있는지 확인 
+
+            let duplicate = false;
+            userInfo.cart.forEach((item) => {
+                if (item.id === req.body.productId) {
+                    duplicate = true;
+                }
+            })
+
+            // if prdouct alread in the cart ? -> count 1 more 
+            if (duplicate) {
+                User.findOneAndUpdate(
+                    { _id: req.user._id, "cart.id": req.body.productId },
+                    { $inc: { "cart.$.quantity": 1 } }, // count 1 more !!
+                    { new: true }, // refresh it and set it as new !! 
+                    (err, userInfo) => {
+                        if (err) return res.status(200).json({ success: false, err })
+                        res.status(200).send(userInfo.cart)
+                    }
+                )
+            }
+            // if not ? -> add new product in the cart
+            else {
+                User.findOneAndUpdate(
+                    { _id: req.user._id },
+                    {
+                        $push: {
+                            cart: {
+                                id: req.body.productId,
+                                quantity: 1,
+                                date: Date.now()
+                            }
+                            // this strucutre should look same as the structure in mongoDB
+                        }
+                    },
+                    { new: true },
+                    (err, userInfo) => {
+                        if (err) return res.status(400).json({ success: false, err })
+                        res.status(200).send(userInfo.cart)
+                    }
+                )
+            }
+        })
 });
 
 module.exports = router;

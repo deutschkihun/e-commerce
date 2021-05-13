@@ -108,16 +108,25 @@ router.post('/products', (req, res) => {
     }
 })
 
-
+// id = 111,222,333 ... => type is array
+// id = 111 => type is single 
 router.get('/products_by_id', (req, res) => {
     // use productId get product information from database
     // API url request has qurey setting with id=${productId}&type=single
     // then by using req.query can get a id and type 
-
     let type = req.query.type
-    let productId = req.query.id
+    let productIds = req.query.id
 
-    Product.find({_id: productId})
+    if(type === "array") {
+        // // from...  id = 111,222,333 
+        // to ... productIds = [111,222,333] 
+        let ids = req.query.id.split(',')
+        productIds = ids.map(item =>{
+            return item
+        })
+    }
+
+    Product.find({_id: {$in: productIds} })
         .populate('writer')
         .exec((err,product) => {
             if(err) return res.status(200).send(err)

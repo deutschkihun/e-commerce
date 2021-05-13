@@ -3,6 +3,8 @@ import {
     REGISTER_USER,
     AUTH_USER,
     LOGOUT_USER,
+    ADD_TO_CART,
+    GET_CART_ITEMS
 } from '../_actions/types';
  
 
@@ -15,6 +17,15 @@ export default function(state={},action){
         case AUTH_USER:
             return {...state, userData: action.payload }
         case LOGOUT_USER:
+            return {...state }
+        case ADD_TO_CART:
+            return {...state, userData: 
+                        {
+                            ...state.userData,
+                            cart:action.payload
+                        }
+        } // add new property "cart" in userData from redux 
+        case GET_CART_ITEMS:
             return {...state }
         default:
             return state;
