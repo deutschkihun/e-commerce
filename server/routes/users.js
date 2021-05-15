@@ -3,6 +3,8 @@ const router = express.Router();
 const { User } = require("../models/User");
 const { Product } = require("../models/Product");
 const { auth } = require("../middleware/auth");
+const { Payment } = require("../models/Payment");
+const async = require("async");
 
 //=================================
 //             User
@@ -92,7 +94,7 @@ router.post("/addToCart", auth, (req, res) => {
                 User.findOneAndUpdate(
                     { _id: req.user._id, "cart.id": req.body.productId },
                     { $inc: { "cart.$.quantity": 1 } }, // count 1 more !!
-                    { new: true }, // refresh it and set it as new !! 
+                    { new: true }, // new : true is require for sending updated data to frontend
                     (err, userInfo) => {
                         if (err) return res.status(200).json({ success: false, err })
                         res.status(200).send(userInfo.cart)
@@ -149,6 +151,81 @@ router.get('/removeFromCart', auth, (req, res) => {
                 })
         }
     )
+})
+
+
+router.post('/successBuy', auth, (req, res) => {
+    
+    let history = [];
+    let transactionData = {};
+
+    // set history 
+    req.body.cartDetail.forEach((item) => {
+        history.push({
+            dateOfPurchase: Date.now(),
+            name: item.title,
+            id: item._id,
+            price: item.price,
+            quantity: item.quantity,
+            paymentId: req.body.paymentData.paymentID
+        })
+    })
+
+    // set transactionData payment collection 
+    transactionData.user = {
+        id: req.user._id,
+        name: req.user.name,
+        email: req.user.email
+    }
+    transactionData.data = req.body.paymentData
+    transactionData.product = history
+
+    //save history into database  
+    User.findOneAndUpdate(
+        { _id: req.user._id },
+        { $push: { history: history }, $set: { cart: [] } }, // insert hisstory, cart makes empty
+        { new: true },
+        (err, user) => {
+            if (err) return res.json({ success: false, err })
+
+
+            // create new Collection Payment and insert transertData into Payment collection
+            const payment = new Payment(transactionData)
+            payment.save((err, doc) => {
+                if (err) return res.json({ success: false, err })
+
+                    // "sold" field update 
+                    // check out how many products are sold 
+                    let products = [];
+                    doc.product.forEach(item => {
+                        products.push({ id: item.id, quantity: item.quantity })
+                    })
+
+
+                    async.eachSeries(products, (item,callback) => {
+
+                        Product.update(
+                            {_id : item.id},
+                            {
+                                $inc : {
+                                    "sold" : item.quantity
+                                }
+                            },
+                            {new : false}, // in this case, sending back to frontend is not necessary 
+                            callback
+                        )
+                    }, (err) => {
+                        if(err) return res.status(400).json({success:false,err})
+                        res.status(200).json({success:true, cart:user.cart, cartDetail : []}) // cart and cartDetail should be empty
+                    })
+     
+            })
+        })
+
+  
+
+
+
 })
 
 module.exports = router;
