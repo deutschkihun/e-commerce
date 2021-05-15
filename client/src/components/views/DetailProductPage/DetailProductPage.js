@@ -22,7 +22,7 @@ function DetailProductPage(props) {
       
         axios.get(`/api/product/products_by_id?id=${productId}&type=single`)
             .then(response => {
-                setProduct(response.data.product[0])
+                setProduct(response.data[0])
             })
             .catch(err => alert(err))
 

@@ -4,7 +4,8 @@ import {
     AUTH_USER,
     LOGOUT_USER,
     ADD_TO_CART,
-    GET_CART_ITEMS
+    GET_CART_ITEMS,
+    REMOVE_CART_ITEMS
 } from '../_actions/types';
  
 
@@ -26,7 +27,14 @@ export default function(state={},action){
                         }
         } // add new property "cart" in userData from redux 
         case GET_CART_ITEMS:
-            return {...state }
+            return {...state, cartDetail:action.payload}
+        case REMOVE_CART_ITEMS:
+            return {...state,cartDetail: action.payload.productInfo,
+                    userData : {
+                        ...state.userData,
+                        cart:action.payload.cart
+                    }
+        } // cart and productInfo come from user_action (removeCartItem : response.data.productInfo,reponse.data.cart)
         default:
             return state;
     }

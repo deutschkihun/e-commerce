@@ -130,7 +130,8 @@ router.get('/products_by_id', (req, res) => {
         .populate('writer')
         .exec((err,product) => {
             if(err) return res.status(200).send(err)
-            return res.status(200).send({success: true, product})
+            //return res.status(200).json({success: true, product}) old version
+            return res.status(200).send(product)
         })
 
 })

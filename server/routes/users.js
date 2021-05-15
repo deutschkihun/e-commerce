@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { User } = require("../models/User");
+const { Product } = require("../models/Product");
 const { auth } = require("../middleware/auth");
 
 //=================================
@@ -103,7 +104,7 @@ router.post("/addToCart", auth, (req, res) => {
                 User.findOneAndUpdate(
                     { _id: req.user._id },
                     {
-                        $push: {
+                        $push: { // $push = insert
                             cart: {
                                 id: req.body.productId,
                                 quantity: 1,
@@ -112,7 +113,7 @@ router.post("/addToCart", auth, (req, res) => {
                             // this strucutre should look same as the structure in mongoDB
                         }
                     },
-                    { new: true },
+                    { new: true }, // set updated data as a current data
                     (err, userInfo) => {
                         if (err) return res.status(400).json({ success: false, err })
                         res.status(200).send(userInfo.cart)
@@ -121,5 +122,33 @@ router.post("/addToCart", auth, (req, res) => {
             }
         })
 });
+
+
+router.get('/removeFromCart', auth, (req, res) => {
+    User.findOneAndUpdate(
+        { _id: req.user._id },
+        {
+            "$pull": // $pull = remove
+                { "cart": { "id": req.query.id } }
+        },
+        { new: true },
+        (err, userInfo) => {
+            let cart = userInfo.cart;
+            let array = cart.map(item => {
+                return item.id
+            })
+
+            //  change it like that, productIds = ['5e8961794be6d81ce2b94752', '5e8960d721e2ca1cb3e30de4']
+            Product.find({ _id: { $in: array } })
+                .populate('writer')
+                .exec((err, productInfo) => {
+                    return res.status(200).json({
+                        productInfo,
+                        cart
+                    })
+                })
+        }
+    )
+})
 
 module.exports = router;
