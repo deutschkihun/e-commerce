@@ -215,8 +215,12 @@ router.post('/successBuy', auth, (req, res) => {
                             callback
                         )
                     }, (err) => {
-                        if(err) return res.status(400).json({success:false,err})
-                        res.status(200).json({success:true, cart:user.cart, cartDetail : []}) // cart and cartDetail should be empty
+                        if (err) return res.status(400).json({ success: false, err })
+                        res.status(200).json({
+                            success: true,
+                            cart: user.cart,
+                            cartDetail: []
+                        }) // cart,cartDetail should be empty
                     })
      
             })

@@ -111,9 +111,9 @@ export function removeCartItem(productId) {
     }
 }
 
-export function onSuccessBuy(paymentData) {
+export function onSuccessBuy(data) {
 
-    const request = axios.post(`/api/users/successBuy`,paymentData)
+    const request = axios.post(`/api/users/successBuy`, data)
         .then(response => response.data);
 
     return {
@@ -121,4 +121,3 @@ export function onSuccessBuy(paymentData) {
         payload: request
     }
 }
-

@@ -51,21 +51,17 @@ function CartPage(props) {
             })
     }
 
-    let transactionSuccess = (data) => {
-        // data is payment from this.props.onSuccess (Paypal.js)
-        dispatch(onSuccessBuy(
-            {
-                paymentData:data,
-                cartDetail:props.user.cartDetail
-            }
-        ))
-        .then(response => {
-            if(response.payload.success) {
-                // successfully paid => no item in cart => don't show amount
-                setShowTotal(false)
-                setShowSuccess(true)
-            } 
-        })
+    const transactionSuccess = (data) => {
+        dispatch(onSuccessBuy({
+            paymentData: data,
+            cartDetail: props.user.cartDetail
+        }))
+            .then(response => {
+                if (response.payload.success) {
+                    setShowTotal(false)
+                    setShowSuccess(true)
+                }
+            })
     }
 
     return (
